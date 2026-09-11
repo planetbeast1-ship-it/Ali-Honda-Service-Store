@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ali Honda Service</title>
+<style>
+  /* ---------- RESET & BASE ---------- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root{
+    --charcoal: #1c1c1c;
+    --charcoal-light: #2a2a2a;
+    --steel: #6d6f72;
+    --orange: #e2001a;
+    --orange-dark: #a80014;
+    --off-white: #f5f5f5;
+    --line: #3d3d3d;
+  }
+
+  body{
+    background: var(--off-white);
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--charcoal);
+  }
+
+  /* ---------- HEADER (sticky cart bar) ---------- */
+  header{
+    background: var(--charcoal);
+    color: var(--off-white);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .cart-btn{
+    background: var(--orange);
+    color: var(--charcoal);
+    border: none;
+    padding: 10px 18px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .cart-btn:hover{ background: var(--orange-dark); color: var(--off-white); }
+
+  /* ---------- BRAND SECTION (full logo banner, top center) ---------- */
+  .brand{
+    background: #ffffff;
+    padding: 22px 24px;
+    text-align: center;
+    border-bottom: 4px solid var(--orange);
+  }
+
+  .brand-logo{
+    max-width: 380px;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---------- BANNER ---------- */
+  /* Placeholder banner — replace background with your own image:
+     .banner{ background: url('your-banner.jpg') center/cover; } */
+  .banner{
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 24px 0;
+  }
+  .banner-inner{
+    background: var(--charcoal);
+    border: 1px dashed #777;
+    border-radius: 4px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--off-white);
+    font-size: 14px;
+    text-align: center;
+    padding: 16px;
+  }
+
+  /* ---------- CATEGORY SECTIONS ---------- */
+  .categories{
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 24px 20px;
+  }
+
+  .category-block{
+    margin-bottom: 44px;
+  }
+
+  .category-title{
+    font-size: 20px;
+    font-weight: bold;
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid var(--orange);
+    display: inline-block;
+  }
+
+  /* ---------- PRODUCTS GRID ---------- */
+  .products{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .card{
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-img{
+    height: 130px;
+    background: var(--steel);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--off-white);
+    font-size: 13px;
+  }
+
+  .card-body{
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+  }
+
+  .card-body h3{ font-size: 16px; }
+  .card-body .price{ color: var(--orange-dark); font-weight: bold; font-size: 15px; }
+  .card-body .desc{ font-size: 13px; color: #666; flex-grow: 1; }
+
+  .add-btn{
+    margin-top: 8px;
+    background: var(--charcoal);
+    color: var(--off-white);
+    border: none;
+    padding: 9px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .add-btn:hover{ background: var(--orange); color: var(--charcoal); }
+
+  /* ---------- CART DRAWER ---------- */
+  .overlay{
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 20;
+  }
+  .overlay.open{ display: block; }
+
+  .drawer{
+    position: fixed;
+    top: 0; right: -380px;
+    width: 340px; max-width: 90vw;
+    height: 100%;
+    background: white;
+    z-index: 21;
+    transition: right 0.25s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .drawer.open{ right: 0; }
+
+  .drawer-head{
+    background: var(--charcoal);
+    color: white;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .drawer-head button{
+    background: none; border: none; color: white; font-size: 20px; cursor: pointer;
+  }
+
+  .drawer-items{
+    padding: 14px;
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+
+  .cart-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+  .cart-row .remove{
+    color: #c0392b;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+
+  .drawer-footer{
+    padding: 14px;
+    border-top: 1px solid #eee;
+  }
+  .total-row{
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+
+  .checkout-btn{
+    width: 100%;
+    background: var(--orange);
+    border: none;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .checkout-btn:hover{ background: var(--orange-dark); color: white; }
+
+  /* ---------- CHECKOUT FORM (inside drawer) ---------- */
+  .checkout-form{
+    padding: 14px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .checkout-form.open{ display: flex; }
+
+  .checkout-form input, .checkout-form textarea{
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+
+  .checkout-form label{
+    font-size: 12px;
+    color: #555;
+    margin-bottom: -4px;
+  }
+
+  .back-link{
+    font-size: 13px;
+    color: var(--orange-dark);
+    cursor: pointer;
+    margin-bottom: 4px;
+  }
+
+  .confirm-msg{
+    display: none;
+    padding: 20px;
+    text-align: center;
+  }
+  .confirm-msg.open{ display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="cart-btn" onclick="openCart()">Cart (<span id="cart-count">0</span>)</button>
+</header>
+
+<!-- ============ BRAND (full logo banner) ============ -->
+<section class="brand">
+  <!-- Logo already has the shop name + "Since 1989" built in, so we just show the full logo image. -->
+  <img src="logo.png" alt="Ali Honda Service" class="brand-logo">
+</section>
+
+<!-- ============ BANNER ============ -->
+<!-- Apni banner image lagane ke liye .banner-inner ki jagah:
+     <img src="banner.jpg" style="width:100%;border-radius:4px;display:block;"> use karein -->
+<section class="banner">
+  <div class="banner-inner">Banner Image Yahan Lagegi<br>(1000 x 300px recommended)</div>
+</section>
+
+<!-- ============ CATEGORIES + PRODUCTS ============ -->
+<!-- Naya category add karna ho tou poora .category-block copy karein.
+     Naya product add karna ho tou .card block copy karein us category ke andar. -->
+<div class="categories" id="product-list">
+
+  <div class="category-block">
+    <h2 class="category-title">Chain &amp; Sprocket</h2>
+    <div class="products">
+
+      <div class="card" data-name="Chain Sprocket Kit - CD 70" data-price="1800">
+        <div class="card-img">CD 70</div>
+        <div class="card-body">
+          <h3>Chain Sprocket Kit - CD 70</h3>
+          <div class="price">Rs. 1800</div>
+          <div class="desc">CD 70 ke liye original chain aur sprocket set.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Chain Sprocket Kit - CG 125" data-price="2200">
+        <div class="card-img">CG 125</div>
+        <div class="card-body">
+          <h3>Chain Sprocket Kit - CG 125</h3>
+          <div class="price">Rs. 2200</div>
+          <div class="desc">CG 125 ke liye heavy duty chain aur sprocket set.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Chain Sprocket Kit - CD 100" data-price="1900">
+        <div class="card-img">CD 100</div>
+        <div class="card-body">
+          <h3>Chain Sprocket Kit - CD 100</h3>
+          <div class="price">Rs. 1900</div>
+          <div class="desc">CD 100 ke liye original chain aur sprocket set.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="category-block">
+    <h2 class="category-title">Front Shocks</h2>
+    <div class="products">
+
+      <div class="card" data-name="Front Shocker - CD 70" data-price="3200">
+        <div class="card-img">CD 70</div>
+        <div class="card-body">
+          <h3>Front Shocker - CD 70</h3>
+          <div class="price">Rs. 3200</div>
+          <div class="desc">CD 70 ke liye pair front shocks, standard height.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Front Shocker - CG 125" data-price="3800">
+        <div class="card-img">CG 125</div>
+        <div class="card-body">
+          <h3>Front Shocker - CG 125</h3>
+          <div class="price">Rs. 3800</div>
+          <div class="desc">CG 125 ke liye pair front shocks, heavy duty spring.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="category-block">
+    <h2 class="category-title">Brakes</h2>
+    <div class="products">
+
+      <div class="card" data-name="Front Brake Pads" data-price="450">
+        <div class="card-img">Brake Pads</div>
+        <div class="card-body">
+          <h3>Front Brake Pads</h3>
+          <div class="price">Rs. 450</div>
+          <div class="desc">High-grip ceramic pads, universal fit.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="category-block">
+    <h2 class="category-title">Engine &amp; Filters</h2>
+    <div class="products">
+
+      <div class="card" data-name="Air Filter" data-price="350">
+        <div class="card-img">Air Filter</div>
+        <div class="card-body">
+          <h3>Air Filter</h3>
+          <div class="price">Rs. 350</div>
+          <div class="desc">Original quality, easy install.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Engine Oil 1L" data-price="1200">
+        <div class="card-img">Engine Oil</div>
+        <div class="card-body">
+          <h3>Engine Oil (1 Litre)</h3>
+          <div class="price">Rs. 1200</div>
+          <div class="desc">Semi-synthetic, all-season.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="category-block">
+    <h2 class="category-title">Other Accessories</h2>
+    <div class="products">
+
+      <div class="card" data-name="Side Mirror Pair" data-price="900">
+        <div class="card-img">Side Mirrors</div>
+        <div class="card-body">
+          <h3>Side Mirror (Pair)</h3>
+          <div class="price">Rs. 900</div>
+          <div class="desc">Universal fitting, scratch resistant.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+      <div class="card" data-name="Clutch Wire" data-price="250">
+        <div class="card-img">Clutch Wire</div>
+        <div class="card-body">
+          <h3>Clutch Wire</h3>
+          <div class="price">Rs. 250</div>
+          <div class="desc">Durable steel wire, standard length.</div>
+          <button class="add-btn" onclick="addToCart(this)">Add to Cart</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <strong>Your Cart</strong>
+    <button onclick="closeCart()">✕</button>
+  </div>
+
+  <div class="drawer-items" id="cart-items">
+    <p style="color:#999; font-size:14px;">Cart khali hai.</p>
+  </div>
+
+  <div class="drawer-footer" id="cart-footer" style="display:none;">
+    <div class="total-row">
+      <span>Total</span>
+      <span id="cart-total">Rs. 0</span>
+    </div>
+    <button class="checkout-btn" onclick="showCheckoutForm()">Proceed to Checkout</button>
+  </div>
+
+  <!-- Checkout form yahan dikhega jab "Proceed to Checkout" click ho -->
+  <div class="checkout-form" id="checkout-form">
+    <div class="back-link" onclick="hideCheckoutForm()">&larr; Back to cart</div>
+
+    <label>Full Name</label>
+    <input type="text" id="cust-name" placeholder="Aapka naam">
+
+    <label>Phone Number</label>
+    <input type="text" id="cust-phone" placeholder="03xx-xxxxxxx">
+
+    <label>Delivery Address</label>
+    <textarea id="cust-address" rows="3" placeholder="Poora pata likhein"></textarea>
+
+    <button class="checkout-btn" onclick="placeOrder()">Confirm Order</button>
+  </div>
+
+  <!-- Order confirm hone ke baad ka message -->
+  <div class="confirm-msg" id="confirm-msg">
+    <h3>✅ Order Received!</h3>
+    <p style="margin-top:10px; font-size:14px; color:#555;">
+      Shukriya! WhatsApp khul gaya hai — wahan "Send" dabayein taake order humein mil jaye.
+    </p>
+    <button class="checkout-btn" style="margin-top:16px;" onclick="closeCart()">Close</button>
+  </div>
+</div>
+
+<script>
+  // ---------- CART DATA ----------
+  // Cart ek array hai jisme har item { name, price, qty } hoga.
+  // Note: Ye data sirf tab tak rehta hai jab tak page open hai (reload hone par reset ho jayega).
+  let cart = [];
+
+  function addToCart(button){
+    const card = button.closest('.card');
+    const name = card.dataset.name;
+    const price = parseInt(card.dataset.price);
+
+    // Check karo ke ye item pehle se cart mein hai ya nahi
+    const existing = cart.find(item => item.name === name);
+    if(existing){
+      existing.qty += 1;
+    } else {
+      cart.push({ name, price, qty: 1 });
+    }
+    renderCart();
+    openCart();
+  }
+
+  function removeFromCart(index){
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  function renderCart(){
+    const itemsDiv = document.getElementById('cart-items');
+    const footer = document.getElementById('cart-footer');
+    const countSpan = document.getElementById('cart-count');
+
+    let totalQty = 0;
+    let totalPrice = 0;
+
+    if(cart.length === 0){
+      itemsDiv.innerHTML = '<p style="color:#999; font-size:14px;">Cart khali hai.</p>';
+      footer.style.display = 'none';
+    } else {
+      itemsDiv.innerHTML = '';
+      cart.forEach((item, index) => {
+        totalQty += item.qty;
+        totalPrice += item.qty * item.price;
+
+        const row = document.createElement('div');
+        row.className = 'cart-row';
+        row.innerHTML = `
+          <span>${item.name} x${item.qty}</span>
+          <span>Rs. ${item.qty * item.price}
+            <span class="remove" onclick="removeFromCart(${index})">remove</span>
+          </span>
+        `;
+        itemsDiv.appendChild(row);
+      });
+      footer.style.display = 'block';
+      document.getElementById('cart-total').textContent = 'Rs. ' + totalPrice;
+    }
+
+    countSpan.textContent = totalQty;
+  }
+
+  function openCart(){
+    document.getElementById('drawer').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closeCart(){
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    // Reset views jab drawer band ho
+    hideCheckoutForm();
+    document.getElementById('confirm-msg').classList.remove('open');
+    document.getElementById('cart-items').style.display = 'block';
+  }
+
+  function showCheckoutForm(){
+    document.getElementById('cart-items').style.display = 'none';
+    document.getElementById('cart-footer').style.display = 'none';
+    document.getElementById('checkout-form').classList.add('open');
+  }
+
+  function hideCheckoutForm(){
+    document.getElementById('checkout-form').classList.remove('open');
+    document.getElementById('cart-items').style.display = 'block';
+    if(cart.length > 0){
+      document.getElementById('cart-footer').style.display = 'block';
+    }
+  }
+
+  function placeOrder(){
+    const name = document.getElementById('cust-name').value.trim();
+    const phone = document.getElementById('cust-phone').value.trim();
+    const address = document.getElementById('cust-address').value.trim();
+
+    if(!name || !phone || !address){
+      alert('Please poori details bharein.');
+      return;
+    }
+
+    // ---------- WHATSAPP ORDER ----------
+    // Apna WhatsApp business number yahan daalein (country code ke sath, + ya 0 ke bagair)
+    const storeWhatsApp = '923425015518';
+
+    // Order ka message tayyar karein
+    let message = 'Naya Order - Ali Honda Service%0A%0A';
+    message += 'Customer: ' + name + '%0A';
+    message += 'Phone: ' + phone + '%0A';
+    message += 'Address: ' + address + '%0A%0A';
+    message += 'Items:%0A';
+
+    let orderTotal = 0;
+    cart.forEach(item => {
+      const lineTotal = item.qty * item.price;
+      orderTotal += lineTotal;
+      message += '- ' + item.name + ' x' + item.qty + ' = Rs. ' + lineTotal + '%0A';
+    });
+
+    message += '%0ATotal: Rs. ' + orderTotal;
+
+    // WhatsApp link banayein aur naye tab mein kholein
+    const waLink = 'https://wa.me/' + storeWhatsApp + '?text=' + message;
+    window.open(waLink, '_blank');
+
+    document.getElementById('checkout-form').classList.remove('open');
+    document.getElementById('confirm-msg').classList.add('open');
+
+    // Order place hone ke baad cart khali kar dein
+    cart = [];
+    renderCart();
+  }
+</script>
+
+</body>
+</html>
