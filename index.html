@@ -25,13 +25,59 @@
   }
 
   /* ---------- HEADER (sticky cart bar) ---------- */
- <header>
-  <div class="header-tagline"><strong>Serving Since 1989</strong> &mdash; Building Trust</div>
-  <div class="header-actions">
-    <a class="whatsapp-btn" href="https://wa.me/923425015518" target="_blank">WhatsApp</a>
-    <button class="cart-btn" onclick="openCart()">Cart (<span id="cart-count">0</span>)</button>
-  </div>
-</header>
+   header{
+    background: var(--charcoal);
+    color: var(--off-white);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-tagline{
+    font-size: 13px;
+    color: #c9c9c9;
+    letter-spacing: 0.3px;
+  }
+  .header-tagline strong{ color: var(--off-white); }
+
+  .header-actions{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .cart-btn{
+    background: var(--orange);
+    color: var(--charcoal);
+    border: none;
+    padding: 10px 18px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  .cart-btn:hover{ background: var(--orange-dark); color: var(--off-white); }
+
+  .whatsapp-btn{
+    background: #25D366;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .whatsapp-btn:hover{ background: #1ebc59; }
   /* ---------- BRAND SECTION (full logo banner, top center) ---------- */
   .brand{
     background: #ffffff;
